@@ -31,7 +31,7 @@ ynh_script_progression "Installing dependencies..."
 
 #PNPM_VERSION=$(sed -n 's/.*"packageManager":\s*"pnpm@\([^"]*\)".*/\1/p' $install_dir/package.json)
 #ynh_hide_warnings corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
-ynh_hide_warnings corepack enable && corepack prepare pnpm@11.7.0 --activate
+ynh_hide_warnings corepack enable && corepack prepare pnpm@latest --activate
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -59,7 +59,7 @@ ynh_script_progression "Installing $app..."
 pushd $install_dir
     ynh_psql_db_shell <<< "CREATE EXTENSION IF NOT EXISTS vector;"
     ynh_exec_as_app pnpm install
-    ynh_exec_as_app --max_old_space_size=8192 TURBO_TELEMETRY_DISABLED=1 pnpm build
+    ynh_exec_as_app NODE_OPTIONS="--max-old-space-size=8192" NEXT_USE_TURBOPACK=0 TURBO_TELEMETRY_DISABLED=1 pnpm build
     ynh_exec_as_app TURBO_TELEMETRY_DISABLED=1 pnpm turbo run db:setup
 popd
 
